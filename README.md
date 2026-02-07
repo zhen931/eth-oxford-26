@@ -7,3 +7,15 @@
 - requests
 - websockets
 - colorama
+
+## Idea
+90% deterministic models, 10% LLM. Deterministic will buy/sell - use a formula called Constant Product Market Maker (xy = k, x = YES, y = NO). LLMs use different models (Claude, Gemini, ChatGPT) with different personalities. Smart contracts - master wallet that acts as a fund for the agents and only use a specified amount of money.
+
+## Tech Stack
+- Python
+- LangGraph
+- Solidity
+- node.js
+- JavaScript
+- React
+- Tailwind CSS
