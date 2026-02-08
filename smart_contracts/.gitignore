@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Environment Variables (CRITICAL: Never share private keys!)
+.env
+
+# Hardhat/Foundry Build Files
+artifacts/
+cache/
+typechain/
+typechain-types/
+coverage/
+coverage.json
+deployments/
+
+# General
+.DS_Store
+Thumbs.db
