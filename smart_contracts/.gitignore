@@ -1,0 +1,20 @@
+# Dependency directories
+node_modules/
+
+# Hardhat compiled artifacts and cache
+artifacts/
+cache/
+typechain-types/
+
+# Environment variables (CRITICAL: Never share this!)
+.env
+
+# Test coverage files
+coverage/
+coverage.json
+
+# OS and Editor system files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
