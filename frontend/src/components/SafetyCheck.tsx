@@ -188,14 +188,6 @@ function DangerCard({ disaster }: { disaster: Disaster }) {
         <br />
         Emergency radius: <span className="font-medium text-danger">{disaster.radius}km</span>
       </p>
-
-      {/* Attestation Hash (simulated) */}
-      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/60 border border-slate-200">
-        <span className="text-[11px] text-muted font-mono">
-          FDC: 0x{disaster.id.replace("d", "a3f9")}...c821
-        </span>
-        <ExternalLink className="w-3 h-3 text-muted" />
-      </div>
     </div>
   );
 }

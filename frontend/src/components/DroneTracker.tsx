@@ -1,0 +1,108 @@
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Navigation, MapPin, AlertTriangle, Package, CheckCircle2 } from "lucide-react";
+
+interface DroneEvent {
+  id: string;
+  text: string;
+  icon: "nav" | "pin" | "alert" | "package" | "check";
+  time: string;
+}
+
+let globalEventId = 0;
+
+const ICON_MAP = {
+  nav: <Navigation className="w-3.5 h-3.5 text-primary" />,
+  pin: <MapPin className="w-3.5 h-3.5 text-amber-500" />,
+  alert: <AlertTriangle className="w-3.5 h-3.5 text-danger" />,
+  package: <Package className="w-3.5 h-3.5 text-success" />,
+  check: <CheckCircle2 className="w-3.5 h-3.5 text-success" />,
+};
+
+const DRONE_SCRIPT: Omit<DroneEvent, "id" | "time">[] = [
+  { text: "Drone AEG-04 dispatched from Warehouse Alpha", icon: "nav" },
+  { text: "Calibrating GPS & payload — 12.4kg medical kit", icon: "package" },
+  { text: "Cruising altitude reached — 120m AGL", icon: "nav" },
+  { text: "Approaching disaster perimeter — 2.1km out", icon: "pin" },
+  { text: "Entering danger zone — switching to thermal scan", icon: "alert" },
+  { text: "Heat signature detected — 3 individuals, quadrant B7", icon: "alert" },
+  { text: "Descending to drop altitude — 15m AGL", icon: "nav" },
+  { text: "Payload released — medical kit delivered", icon: "package" },
+  { text: "Confirming receipt — visual contact established", icon: "check" },
+  { text: "Ascending — returning to Warehouse Alpha", icon: "nav" },
+  { text: "Drone AEG-07 dispatched for water supply run", icon: "nav" },
+  { text: "AEG-07 entering corridor — ETA 4 minutes", icon: "pin" },
+  { text: "AEG-04 battery at 47% — rerouting to charging pad", icon: "alert" },
+  { text: "AEG-07 approaching drop zone — 800m out", icon: "nav" },
+  { text: "Water supply payload deployed — 8L container", icon: "package" },
+  { text: "AEG-07 scanning area — no further survivors in sector", icon: "check" },
+];
+
+export default function DroneTracker() {
+  const [events, setEvents] = useState<DroneEvent[]>([]);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const indexRef = useRef(0);
+
+  useEffect(() => {
+    const addEvent = () => {
+      const scriptItem = DRONE_SCRIPT[indexRef.current % DRONE_SCRIPT.length];
+      const now = new Date();
+      const time = `${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}:${now.getSeconds().toString().padStart(2, "0")}`;
+
+      const eventId = `drone-${globalEventId++}`;
+      indexRef.current++;
+
+      setEvents((prev) => {
+        // Deduplicate in case React calls the updater twice
+        if (prev.some((e) => e.id === eventId)) return prev;
+        const next = [...prev, { ...scriptItem, id: eventId, time }];
+        return next.slice(-30); // keep last 30
+      });
+    };
+
+    // First event immediately
+    addEvent();
+    const interval = setInterval(addEvent, 4000 + Math.random() * 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [events]);
+
+  return (
+    <div className="flex flex-col h-full">
+      <div className="flex items-center gap-2 px-4 py-3 border-b border-border">
+        <Navigation className="w-4 h-4 text-primary" />
+        <h3 className="text-sm font-semibold text-slate-900">Drone Operations</h3>
+        <span className="ml-auto text-[10px] font-medium text-success flex items-center gap-1">
+          <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+          LIVE
+        </span>
+      </div>
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-2 space-y-2">
+        <AnimatePresence initial={false}>
+          {events.map((ev) => (
+            <motion.div
+              key={ev.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="flex items-start gap-2.5"
+            >
+              <div className="shrink-0 mt-0.5">{ICON_MAP[ev.icon]}</div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-slate-700 leading-relaxed">{ev.text}</p>
+              </div>
+              <span className="shrink-0 text-[10px] text-slate-300 font-mono mt-0.5">{ev.time}</span>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+    </div>
+  );
+}

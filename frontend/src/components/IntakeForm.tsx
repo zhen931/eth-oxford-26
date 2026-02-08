@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Sparkles, Send, Loader2, CheckCircle2, XCircle } from "lucide-react";
+import { ArrowLeft, Sparkles, Send, Loader2, XCircle } from "lucide-react";
 import { API_BASE } from "@/lib/types";
 import type { Disaster, EvaluationResult, UserLocation } from "@/lib/types";
 
@@ -43,7 +43,7 @@ export default function IntakeForm({ disaster, userLocation, onSubmit, onBack }:
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          disaster_id: disaster?.id || "d3",
+          disaster_id: disaster?.id || "demo-001",
           description: message,
           lat: userLocation.lat,
           lng: userLocation.lng,
@@ -60,6 +60,7 @@ export default function IntakeForm({ disaster, userLocation, onSubmit, onBack }:
         return;
       }
 
+      // Go straight to dashboard — debate will replay there with delays
       onSubmit(message, result);
     } catch {
       setSubmitState("error");
@@ -88,7 +89,7 @@ export default function IntakeForm({ disaster, userLocation, onSubmit, onBack }:
           animate={{ opacity: 1, y: 0 }}
           className="mb-6 px-4 py-2 rounded-full bg-danger-light border border-danger/20 text-xs font-medium text-danger"
         >
-          Responding to: {disaster.name} ({disaster.distance_km}km away)
+          Responding to: {disaster.name} ({disaster.distance_km ?? 0}km away)
         </motion.div>
       )}
 
@@ -129,8 +130,6 @@ export default function IntakeForm({ disaster, userLocation, onSubmit, onBack }:
               }
             }}
           />
-
-          {/* Character count */}
           <span className="absolute bottom-3 right-4 text-[11px] text-slate-300">
             {message.length}/500
           </span>
@@ -189,7 +188,7 @@ export default function IntakeForm({ disaster, userLocation, onSubmit, onBack }:
         </motion.div>
       )}
 
-      {/* Submit / Loading state */}
+      {/* Submit button */}
       <motion.button
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -203,7 +202,7 @@ export default function IntakeForm({ disaster, userLocation, onSubmit, onBack }:
         {submitState === "submitting" ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin" />
-            AI Agents Deliberating...
+            Evaluating...
           </>
         ) : (
           <>
@@ -212,20 +211,6 @@ export default function IntakeForm({ disaster, userLocation, onSubmit, onBack }:
           </>
         )}
       </motion.button>
-
-      {/* Processing explanation */}
-      {submitState === "submitting" && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="mt-4 text-center max-w-sm"
-        >
-          <p className="text-xs text-muted leading-relaxed">
-            5 AI agents are evaluating your request — Skeptic, Empath, Logistics, Official, and Arbiter.
-            This may take 15-30 seconds.
-          </p>
-        </motion.div>
-      )}
     </div>
   );
 }
